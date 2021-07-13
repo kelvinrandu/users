@@ -1,24 +1,38 @@
 import React from "react";
 import { useSelector } from "react-redux";
-
+import { Link } from "react-router-dom";
+import { VStack,StackDivider,Box ,Heading ,Text} from "@chakra-ui/react"
 const User = () => {
   const users = useSelector((state) => state.allUsers.users);
-  const {id,title} = users[0];
+  const renderUser = users.map((user) => {
+    const { id, name } = user;
+    return (
+      <div>
+        <Link to={`/user/${id}`}>
+
+        <Box p={5} shadow="md" borderWidth="1px" >
+      <Heading fontSize="xl">title</Heading>
+      <Text mt={4}>nmae</Text>
+    </Box>
+
+         
+        </Link>
+      </div>
+    );
+  });
+
   console.log(users);
   return (
-    <div className="ui link cards">
-    <div className="card">
-      <div className="image">
-      
-      </div>
-      <div className="content">
-        <div className="header">{title}</div>
-        <div className="meta price">$ </div>
-        <div className="meta"></div>
-      </div>
-    </div>
-  </div>
-  );
+      <>
+    <VStack
+    mt="3px"
+    w="40%"
+    
+    spacing={4}
+    align="stretch"
+  >{renderUser}
+   </VStack></>
+    );
 };
 
 export default User;

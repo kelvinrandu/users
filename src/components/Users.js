@@ -1,26 +1,36 @@
 import axios from 'axios';
 import React, {useEffect}from 'react';
+import { useSelector, useDispatch} from "react-redux";
 import User from "./User"
+import { setUsers} from "../redux/actions/userActions";
+import { Center } from "@chakra-ui/react"
 
 
 const Users = () => {
+    const users = useSelector((state) => state.allUsers.users);
+    const dispatch = useDispatch();
     const fetchusers = async () =>{
         const response = await axios.get("https://ti-react-test.herokuapp.com/users").catch((err) =>{
             console.log(" Err", err);
         });
-        console.log(response.data)
+        dispatch(setUsers( response.data));
     };
 
-    useEffect(()=>{
+    useEffect(()=>{ 
         fetchusers();
 
-    })
+    }, []);
+    console.log("users:", users);
 
     return (
-        <div className="ui grid container">
-            <h1>users lists</h1>
+        <>
+            <Center  h="100vh" color="white">
             <User/>
-        </div>
+            </Center>
+            
+            
+            
+        </>
     );
 };
 

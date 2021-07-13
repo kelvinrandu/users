@@ -78,7 +78,8 @@ const UserDetail = () => {
         console.log(" Err", err);
       });
     dispatch(selectedUsers(response.data));
-    
+ 
+
 
     onClose();
     flushInputs();

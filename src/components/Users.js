@@ -1,14 +1,27 @@
-import React from 'react';
+import axios from 'axios';
+import React, {useEffect}from 'react';
+import User from "./User"
 
-class myComponent extends React.Component {
-  componentDidMount() {
-    const apiUrl = 'https://ti-react-test.herokuapp.com/users';
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => console.log('This is your data', data));
-  }
-  render() {
-    return <h1>my Component has Mounted, Check the browser 'console' </h1>;
-  }
-}
-export default myComponent;
+
+const Users = () => {
+    const fetchusers = async () =>{
+        const response = await axios.get("https://ti-react-test.herokuapp.com/users").catch((err) =>{
+            console.log(" Err", err);
+        });
+        console.log(response.data)
+    };
+
+    useEffect(()=>{
+        fetchusers();
+
+    })
+
+    return (
+        <div className="ui grid container">
+            <h1>users lists</h1>
+            <User/>
+        </div>
+    );
+};
+
+export default Users

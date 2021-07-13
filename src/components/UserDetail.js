@@ -1,12 +1,25 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectedUsers,
   removeSelectedUsers,
+  editUser,
 } from "../redux/actions/userActions";
 import axios from "axios";
+
 import {
+  Textarea,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   Heading,
   Avatar,
   Box,
@@ -14,17 +27,33 @@ import {
   Text,
   Stack,
   Button,
-  Link,
   Badge,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 const UserDetail = () => {
+
   const user = useSelector((state) => state.user);
-  const { id, name, email, bio ,occupation} = user;
+  const { id, name, email, bio, occupation } = user;
+  const [newName, setNewName] = useState(name);
+  const [newEmail, setNewEmail] = useState(email);
+  const [newOccupation, setNewOccupation] = useState(occupation);
+  const [newBio, setNewBio] = useState(bio);
   const { userId } = useParams();
   const dispatch = useDispatch();
-  console.log(user);
+
+  // control modal constants
+  const { isOpen, onOpen, onClose } = useDisclosure();
+ 
+  const flushInputs =()=>{
+      setNewName('');
+      setNewOccupation('');
+      setNewBio('');
+      setNewEmail('');
+  }
+
+  //fetch user from api
   const fetchuser = async () => {
     const response = await axios
       .get(`https://ti-react-test.herokuapp.com/users/${userId}`)
@@ -32,6 +61,27 @@ const UserDetail = () => {
         console.log(" Err", err);
       });
     dispatch(selectedUsers(response.data));
+  };
+
+
+  //edit user
+  const editUser = async () => {
+
+    const response = await axios
+      .patch(`https://ti-react-test.herokuapp.com/users/${userId}`, {
+        name: newName,
+        email: newEmail,
+        occupation: newOccupation,
+        bio: newBio,
+      })
+      .catch((err) => {
+        console.log(" Err", err);
+      });
+    dispatch(selectedUsers(response.data));
+    
+
+    onClose();
+    flushInputs();
   };
   useEffect(() => {
     if (userId && userId !== "") fetchuser();
@@ -52,7 +102,6 @@ const UserDetail = () => {
       >
         <Avatar
           size={"xl"}
-
           alt={"Avatar Alt"}
           mb={4}
           pos={"relative"}
@@ -69,10 +118,10 @@ const UserDetail = () => {
           }}
         />
         <Heading fontSize={"2xl"} fontFamily={"body"}>
-        {name}
+          {name}
         </Heading>
         <Text fontWeight={600} color={"gray.500"} mb={4}>
-         {email}
+          {email}
         </Text>
         <Text
           textAlign={"center"}
@@ -80,10 +129,6 @@ const UserDetail = () => {
           px={3}
         >
           {bio}{" "}
-          <Link href={"#"} color={"blue.400"}>
-            #tag
-          </Link>{" "}
-          me in your posts
         </Text>
         <Stack align={"center"} justify={"center"} direction={"row"} mt={6}>
           <Badge
@@ -94,21 +139,23 @@ const UserDetail = () => {
           >
             {occupation}
           </Badge>
-
         </Stack>
         <Stack mt={8} direction={"row"} spacing={4}>
+          <Link to={"/"}>
+            <Button
+              flex={1}
+              fontSize={"sm"}
+              rounded={"full"}
+              _focus={{
+                bg: "gray.200",
+              }}
+            >
+              Back
+            </Button>
+          </Link>
           <Button
             flex={1}
-            fontSize={"sm"}
-            rounded={"full"}
-            _focus={{
-              bg: "gray.200",
-            }}
-          >
-            Back
-          </Button>
-          <Button
-            flex={1}
+            onClick={onOpen}
             fontSize={"sm"}
             rounded={"full"}
             bg={"blue.400"}
@@ -127,7 +174,64 @@ const UserDetail = () => {
           </Button>
         </Stack>
       </Box>
-      <p></p>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit user</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl id="first-name" isRequired>
+              <FormLabel> name</FormLabel>
+              <Input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={name}
+              />
+            </FormControl>
+            <FormControl id="first-name" isRequired>
+              <FormLabel>email</FormLabel>
+              <Input
+                type="text"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder={email}
+              />
+            </FormControl>
+          </ModalBody>
+          <FormControl id="first-name" isRequired>
+            <FormLabel>bio</FormLabel>
+            <Textarea
+              type="text"
+              value={newBio}
+              onChange={(e) => setNewBio(e.target.value)}
+              placeholder={bio}
+            />
+          </FormControl>
+          <FormControl id="first-name" isRequired>
+            <FormLabel>occupation</FormLabel>
+            <Input
+              type="text"
+              value={newOccupation}
+              onChange={(e) => setNewOccupation(e.target.value)}
+              placeholder={occupation}
+            />
+          </FormControl>
+          <ModalFooter>
+            <Button variant="ghost" onClick={onClose}>
+              Close
+            </Button>
+            <Button
+              disabled={!newName || !newEmail || !newOccupation || !newBio}
+              colorScheme="blue"
+              mr={3}
+              onClick={editUser}
+            >
+              Edit
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Center>
   );
 };

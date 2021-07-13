@@ -27,3 +27,15 @@ export const selectedUserReducer= (state = {} , {type, payload})=>{
     }
 
 }
+export const editUserReducer= (state = {} , {type, payload})=>{
+    switch (type) {
+        case ActionTypes.EDIT_USER:
+            
+            return {payload};
+
+    
+        default:
+            return state;
+    }
+
+}

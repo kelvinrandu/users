@@ -17,3 +17,10 @@ export const removeSelectedUsers = () =>{
       
     }
 }
+export const editUser = () =>{
+    return {
+        type:ActionTypes.EDIT_USER,
+       
+      
+    }
+}

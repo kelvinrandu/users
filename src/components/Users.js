@@ -24,7 +24,7 @@ const Users = () => {
 
     return (
         <>
-            <Center  h="100vh" color="white">
+            <Center mt="80px" color="white">
             <User/>
             </Center>
             
